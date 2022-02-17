@@ -35,7 +35,7 @@ impl BasicApp {
         nwg::Clipboard::set_data_text(&self.window,  &self.pass_area.text());
         let text = nwg::Clipboard::data_text(&self.window);
         assert!(text.is_some());
-        assert!(&text.unwrap() == &self.pass_area.text());
+        assert!(text.unwrap() == self.pass_area.text());
         nwg::modal_info_message(&self.window, "Copied to clipboard", &format!("Copied to clipboard {}", self.pass_area.text()));
     }
 

@@ -124,11 +124,11 @@ mod basic_app_ui {
                 if let Some(ui) = evt_ui.upgrade() {
                     match evt {
                         E::OnButtonClick => 
-                            if &handle == &ui.copy_button {
+                            if handle == ui.copy_button {
                                 BasicApp::clipboard_text(&ui);
-                            } else if &handle == &ui.new_button {
+                            } else if handle == ui.new_button {
                                 BasicApp::update_text(&ui);
-                            } else if &handle == &ui.about_button {
+                            } else if handle == ui.about_button {
                                 BasicApp::about_text(&ui);
                             }
                         E::OnWindowClose => 

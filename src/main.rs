@@ -40,7 +40,7 @@ impl BasicApp {
     }
 
     fn about_text(&self) {
-        nwg::modal_info_message(&self.window, "About", &format!("© Victor Vinogradov 2022 \nvict.programmer@gmail.com \nhttps://github.com/vict-programmer"));
+        nwg::modal_info_message(&self.window, "About", "© Victor Vinogradov 2022 \nvict.programmer@gmail.com \nhttps://github.com/vict-programmer");
     }
 
     fn update_text(&self) {

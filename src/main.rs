@@ -132,7 +132,7 @@ mod basic_app_ui {
                                 BasicApp::about_text(&ui);
                             }
                         E::OnWindowClose => 
-                            if &handle == &ui.window {
+                            if handle == ui.window {
                                 BasicApp::close_app(&ui);
                             },
                         _ => {}

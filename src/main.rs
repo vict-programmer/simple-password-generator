@@ -5,42 +5,44 @@ extern crate passwords;
 use nwg::NativeUi;
 use passwords::PasswordGenerator;
 
-
 #[derive(Default)]
 pub struct BasicApp {
     window: nwg::Window,
     pass_area: nwg::TextInput,
     copy_button: nwg::Button,
     new_button: nwg::Button,
-    about_button: nwg::Button
+    about_button: nwg::Button,
 }
 
 impl BasicApp {
-
     fn generator_password() -> String {
         let pg = PasswordGenerator {
-           length: 20,
-           numbers: true,
-           lowercase_letters: true,
-           uppercase_letters: true,
-           symbols: true,
-           spaces: false,
-           exclude_similar_characters: false,
-           strict: true,
-       };
-        return pg.generate_one().unwrap().to_string();
+            length: 20,
+            numbers: true,
+            lowercase_letters: true,
+            uppercase_letters: true,
+            symbols: true,
+            spaces: false,
+            exclude_similar_characters: false,
+            strict: true,
+        };
+        return pg.generate_one().unwrap();
     }
 
     fn clipboard_text(&self) {
-        nwg::Clipboard::set_data_text(&self.window,  &self.pass_area.text());
+        nwg::Clipboard::set_data_text(&self.window, &self.pass_area.text());
         let text = nwg::Clipboard::data_text(&self.window);
         assert!(text.is_some());
-        assert!(&text.unwrap() == &self.pass_area.text());
-        nwg::modal_info_message(&self.window, "Copied to clipboard", &format!("Copied to clipboard {}", self.pass_area.text()));
+        assert!(text.unwrap() == self.pass_area.text());
+        nwg::modal_info_message(
+            &self.window,
+            "Copied to clipboard",
+            &format!("Copied to clipboard {}", self.pass_area.text()),
+        );
     }
 
     fn about_text(&self) {
-        nwg::modal_info_message(&self.window, "About", &format!("© Victor Vinogradov 2022 \nvict.programmer@gmail.com \nhttps://github.com/vict-programmer"));
+        nwg::modal_info_message(&self.window, "About", "© Victor Vinogradov 2022 \nvict.programmer@gmail.com \nhttps://github.com/vict-programmer");
     }
 
     fn update_text(&self) {
@@ -50,29 +52,27 @@ impl BasicApp {
     fn close_app(&self) {
         nwg::stop_thread_dispatch();
     }
-
-
 }
 
 //
 // ALL of this stuff is handled by native-windows-derive
 //
 mod basic_app_ui {
-    use native_windows_gui as nwg;
     use super::*;
-    use std::rc::Rc;
+    use native_windows_gui as nwg;
     use std::cell::RefCell;
     use std::ops::Deref;
+    use std::rc::Rc;
 
     pub struct BasicAppUi {
         inner: Rc<BasicApp>,
-        default_handler: RefCell<Option<nwg::EventHandler>>
+        default_handler: RefCell<Option<nwg::EventHandler>>,
     }
 
     impl nwg::NativeUi<BasicAppUi> for BasicApp {
         fn build_ui(mut data: BasicApp) -> Result<BasicAppUi, nwg::NwgError> {
             use nwg::Event as E;
-            
+
             // Controls
             nwg::Window::builder()
                 .flags(nwg::WindowFlags::WINDOW | nwg::WindowFlags::VISIBLE)
@@ -111,7 +111,6 @@ mod basic_app_ui {
                 .parent(&data.window)
                 .build(&mut data.about_button)?;
 
-
             // Wrap-up
             let ui = BasicAppUi {
                 inner: Rc::new(data),
@@ -123,26 +122,31 @@ mod basic_app_ui {
             let handle_events = move |evt, _evt_data, handle| {
                 if let Some(ui) = evt_ui.upgrade() {
                     match evt {
-                        E::OnButtonClick => 
-                            if &handle == &ui.copy_button {
+                        E::OnButtonClick => {
+                            if handle == ui.copy_button {
                                 BasicApp::clipboard_text(&ui);
-                            } else if &handle == &ui.new_button {
+                            } else if handle == ui.new_button {
                                 BasicApp::update_text(&ui);
-                            } else if &handle == &ui.about_button {
+                            } else if handle == ui.about_button {
                                 BasicApp::about_text(&ui);
                             }
-                        E::OnWindowClose => 
-                            if &handle == &ui.window {
+                        }
+                        E::OnWindowClose => {
+                            if handle == ui.window {
                                 BasicApp::close_app(&ui);
-                            },
+                            }
+                        }
                         _ => {}
                     }
                 }
             };
 
-           *ui.default_handler.borrow_mut() = Some(nwg::full_bind_event_handler(&ui.window.handle, handle_events));
+            *ui.default_handler.borrow_mut() = Some(nwg::full_bind_event_handler(
+                &ui.window.handle,
+                handle_events,
+            ));
 
-            return Ok(ui);
+            Ok(ui)
         }
     }
 

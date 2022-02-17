@@ -142,7 +142,7 @@ mod basic_app_ui {
 
            *ui.default_handler.borrow_mut() = Some(nwg::full_bind_event_handler(&ui.window.handle, handle_events));
 
-            return Ok(ui);
+            Ok(ui)
         }
     }
 

@@ -28,7 +28,7 @@ impl BasicApp {
            exclude_similar_characters: false,
            strict: true,
        };
-        return pg.generate_one().unwrap().to_string();
+        return pg.generate_one().unwrap();
     }
 
     fn clipboard_text(&self) {
